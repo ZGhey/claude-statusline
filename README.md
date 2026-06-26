@@ -10,6 +10,19 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 
 ![claude-statusline](docs/statusline.svg)
 
+## Features
+
+- **Single POSIX `sh` script** — no Node, no daemon, no build step; only `jq` + `awk`
+- **At-a-glance session view** — directory, model, context %, duration, git branch, and lines added/removed
+- **Smart cost display** — shows real cost on API/console billing, auto-hidden for Pro/Max subscribers (override with `STATUSLINE_SHOW_COST=1`)
+- **Rate-limit tracking** — 5-hour and 7-day usage with reset time, color-coded by threshold
+- **Color-coded thresholds** — context and rate-limit segments turn green → yellow → red as they fill
+- **Self-hiding segments** — anything without data simply disappears, keeping the line clean
+- **Cross-platform** — macOS, Linux, and Windows (Git Bash / WSL)
+- **One-command install** — merges into `~/.claude/settings.json` without clobbering your other settings
+- **Easy to customize** — clearly-numbered segment blocks you can reorder or drop
+- **shellcheck CI** — every push is linted
+
 ## What it shows
 
 **Left group (active info):**
