@@ -60,6 +60,14 @@ cd claude-statusline
 ./install.sh
 ```
 
+固定到某个 tag 版本(`v0.1.0`),而不是跟随 `main`:
+
+```sh
+git clone --branch v0.1.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
+cd claude-statusline
+./install.sh
+```
+
 安装脚本会把 `statusline-command.sh` 复制到 `~/.claude/`,并在
 `~/.claude/settings.json` 的 `statusLine` 键下注册它(采用**合并**写入,
 你已有的其它配置会被保留)。开一个新 session 即可看到。
@@ -87,6 +95,17 @@ cd claude-statusline
 
 两者在 macOS 和大多数 Linux 发行版上都自带。macOS 上若缺 `jq`:
 `brew install jq`。
+
+### 平台支持
+
+全平台通用 —— 单个 POSIX `sh` 脚本,不依赖任何特定操作系统。唯一有平台差异的地方
+(`date`:BSD 的 `-r` vs GNU 的 `-d @`)已用回退方案处理,所以重置时间在各平台都能正常显示。
+
+| 平台 | 状态 | 说明 |
+|------|------|------|
+| macOS | ✅ | 开箱即用(`jq`/`awk` 自带) |
+| Linux | ✅ | 需装 `jq`(`apt install jq` / `dnf install jq` 等) |
+| Windows | ✅(经 Git Bash 或 WSL) | Claude Code 在那里执行 `sh` 命令;需装 `jq`(`scoop install jq` / WSL 的包管理器) |
 
 ## 自定义
 

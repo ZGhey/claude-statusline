@@ -60,6 +60,14 @@ cd claude-statusline
 ./install.sh
 ```
 
+Pin to a tagged release (`v0.1.0`) instead of tracking `main`:
+
+```sh
+git clone --branch v0.1.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
+cd claude-statusline
+./install.sh
+```
+
 The installer copies `statusline-command.sh` to `~/.claude/` and registers it in
 `~/.claude/settings.json` under `statusLine` (it **merges**, so your other
 settings are preserved). Start a new session to see it.
@@ -87,6 +95,18 @@ this to `~/.claude/settings.json`:
 
 Both ship with macOS and most Linux distros. On macOS without `jq`:
 `brew install jq`.
+
+### Platform support
+
+Cross-platform — a single POSIX `sh` script with no OS-specific assumptions.
+The one place platforms differ (`date`: BSD `-r` vs GNU `-d @`) is handled with
+a fallback, so the reset time renders everywhere.
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| macOS | ✅ | Works out of the box (`jq`/`awk` preinstalled) |
+| Linux | ✅ | Needs `jq` (`apt install jq` / `dnf install jq` / etc.) |
+| Windows | ✅ via Git Bash or WSL | Claude Code runs the `sh` command there; install `jq` (`scoop install jq` / WSL package manager) |
 
 ## Customizing
 

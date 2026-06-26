@@ -147,7 +147,10 @@ five_str=$(rate_segment "5h" "$five_used")
 seven_str=$(rate_segment "7d" "$seven_used")
 
 if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
-  reset_time=$(date -r "$resets_at" +%H:%M 2>/dev/null)
+  # `date -r EPOCH` is BSD/macOS; `date -d @EPOCH` is GNU/Linux (also Git Bash
+  # and WSL on Windows). Try BSD first, fall back to GNU, so the time renders
+  # on every platform.
+  reset_time=$(date -r "$resets_at" +%H:%M 2>/dev/null || date -d "@$resets_at" +%H:%M 2>/dev/null)
   if [ -n "$reset_time" ]; then
     resets_str="resets:${reset_time}"
   else
