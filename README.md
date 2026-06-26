@@ -13,7 +13,7 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 
 | Segment | Example | Meaning |
 |---------|---------|---------|
-| Directory | `~/.hermes` | Current working dir (cyan, `~`-shortened) |
+| Directory | `~/.claude` | Current working dir (cyan, `~`-shortened) |
 | Model | `opus4.8` | Active model, short form |
 | Context | `ctx:42%` | Context window used — green / yellow (≥50%) / red (>80%) |
 | Duration | `1m35s` | Session wall-clock time |
