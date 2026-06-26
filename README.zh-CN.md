@@ -1,5 +1,7 @@
 # claude-statusline
 
+[![shellcheck](https://github.com/ZGhey/claude-statusline/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/ZGhey/claude-statusline/actions/workflows/shellcheck.yml)
+
 [English](README.md) · **简体中文**
 
 一个轻量、几乎零依赖的 [Claude Code](https://code.claude.com) 状态栏。
