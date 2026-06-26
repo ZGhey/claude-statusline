@@ -75,14 +75,23 @@ if [ -n "$duration_ms" ] && [ "$duration_ms" != "null" ]; then
   duration_part=$(printf "${WHITE}%s${RESET}" "$duration_str")
 fi
 
-# 5. Session cost in USD from .cost.total_cost_usd (magenta, only when >= 1 cent)
-cost_usd=$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')
+# 5. Session cost in USD from .cost.total_cost_usd (magenta, only when >= 1 cent).
+#    total_cost_usd is a client-side estimate. For Claude.ai subscribers (Pro/Max)
+#    it is only an API-equivalent figure, NOT the actual bill (which is the flat
+#    subscription), so it is misleading. The statusline JSON exposes no billing
+#    field, but `.rate_limits` is present ONLY for subscribers — use it as the
+#    signal: hide cost when subscribed, show it for API/console billing.
+#    Override with STATUSLINE_SHOW_COST=1 to always display.
 cost_part=""
-if [ -n "$cost_usd" ] && [ "$cost_usd" != "null" ]; then
-  show_cost=$(awk -v c="$cost_usd" 'BEGIN { print (c + 0 >= 0.005) ? 1 : 0 }')
-  if [ "$show_cost" = "1" ]; then
-    cost_str=$(awk -v c="$cost_usd" 'BEGIN { printf "$%.2f", c }')
-    cost_part=$(printf "${MAGENTA}%s${RESET}" "$cost_str")
+is_subscriber=$(printf '%s' "$input" | jq -r 'if .rate_limits then "1" else "0" end')
+if [ "${STATUSLINE_SHOW_COST:-0}" = "1" ] || [ "$is_subscriber" = "0" ]; then
+  cost_usd=$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')
+  if [ -n "$cost_usd" ] && [ "$cost_usd" != "null" ]; then
+    show_cost=$(awk -v c="$cost_usd" 'BEGIN { print (c + 0 >= 0.005) ? 1 : 0 }')
+    if [ "$show_cost" = "1" ]; then
+      cost_str=$(awk -v c="$cost_usd" 'BEGIN { printf "$%.2f", c }')
+      cost_part=$(printf "${MAGENTA}%s${RESET}" "$cost_str")
+    fi
   fi
 fi
 

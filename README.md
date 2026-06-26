@@ -3,9 +3,7 @@
 A tiny, dependency-light status line for [Claude Code](https://code.claude.com).
 One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 
-```
-~/.hermes  opus4.8  ctx:42%  1m35s  $0.42  main  +156/-23  │  used:35%  resets:10:00
-```
+![claude-statusline](docs/statusline.svg)
 
 ## What it shows
 
@@ -17,7 +15,7 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 | Model | `opus4.8` | Active model, short form |
 | Context | `ctx:42%` | Context window used — green / yellow (≥50%) / red (>80%) |
 | Duration | `1m35s` | Session wall-clock time |
-| Cost | `$0.42` | Session cost in USD (hidden below 1¢) |
+| Cost | `$1.84` | Session cost in USD — **shown only on API/console billing**, hidden for subscribers (see below) |
 | Branch | `main` | Git branch |
 | Lines | `+156/-23` | Lines added / removed by Claude this session |
 
@@ -29,6 +27,25 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 | Resets | `resets:10:00` | When the 5-hour window resets |
 
 Segments hide themselves when their data isn't available, so the line stays clean.
+
+## Cost & subscriptions
+
+`cost.total_cost_usd` is a **client-side estimate** that, per Claude Code's docs,
+"may differ from your actual bill." For Claude.ai **Pro/Max subscribers** it's just
+an API-equivalent figure — you pay a flat subscription, not per token — so showing
+it is misleading.
+
+The status JSON exposes no billing field, but `rate_limits` is present **only for
+subscribers**. The script uses that as the signal:
+
+- **Subscriber** (`rate_limits` present) → cost **hidden**
+- **API / console billing** (no `rate_limits`) → cost **shown** (it's your real bill)
+
+Force the cost segment on regardless with an env var:
+
+```sh
+export STATUSLINE_SHOW_COST=1
+```
 
 ## Install
 
