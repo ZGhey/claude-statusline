@@ -5,8 +5,10 @@
 
 [English](README.md) · **简体中文**
 
-一个轻量、几乎零依赖的 [Claude Code](https://code.claude.com) 状态栏。
-单个 POSIX `sh` 脚本,无需 Node、无后台进程 —— 只用到 `jq` 和 `awk`。
+> **唯一不给订阅用户显示"幻象成本"的 Claude Code 状态栏。**
+
+一个轻量、几乎零依赖的 [Claude Code](https://code.claude.com) 状态栏 ——
+单个 POSIX `sh` 脚本,无需 Node、无后台进程,只用到 `jq` 和 `awk`。
 
 ![claude-statusline](docs/statusline.svg)
 
@@ -22,6 +24,20 @@
 - **一键安装** —— 合并写入 `~/.claude/settings.json`,不覆盖你已有的配置
 - **易于自定义** —— 每个字段都是清晰编号的代码块,可自由重排或删除
 - **shellcheck CI** —— 每次 push 自动静态检查
+
+## 为什么又造一个 statusline?
+
+已经有不少不错的 statusline(ccstatusline、CCometixLine 等)。这个项目存在的理由就三条:
+
+- **它不会对订阅用户谎报成本。** `total_cost_usd` 只是个"折算成 API 的估算值"——
+  Pro/Max 用户付的是固定订阅费,不是这个数。本项目会判断你的计费模式(靠订阅用户专属的
+  `rate_limits` 块),在显示会误导时自动隐藏它。
+- **零运行时,无 Node。** 大多数功能丰富的 statusline 都是 Node/npx 包。这个就一个 POSIX
+  `sh` 文件加 `jq`/`awk` —— 不往全局装东西、不用维护更新、两分钟就能审完全部代码。
+- **代码归你改。** 编号清晰的字段块 + 顶部的 ANSI 颜色,几秒钟就能重排或删除,
+  不用学任何配置 DSL。
+
+想要 powerline 主题和配置 TUI?用 ccstatusline。想要小巧、诚实、可随手改的?用这个。
 
 ## 显示内容
 

@@ -5,8 +5,10 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-A tiny, dependency-light status line for [Claude Code](https://code.claude.com).
-One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
+> **The Claude Code status line that doesn't show subscribers a phantom cost.**
+
+A tiny, dependency-light status line for [Claude Code](https://code.claude.com) —
+one POSIX `sh` script, no Node, no daemon, just `jq` and `awk`.
 
 ![claude-statusline](docs/statusline.svg)
 
@@ -22,6 +24,24 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 - **One-command install** — merges into `~/.claude/settings.json` without clobbering your other settings
 - **Easy to customize** — clearly-numbered segment blocks you can reorder or drop
 - **shellcheck CI** — every push is linted
+
+## Why another statusline?
+
+There are already good statuslines out there (ccstatusline, CCometixLine, …).
+This one exists for three specific reasons:
+
+- **It won't lie to subscribers about cost.** `total_cost_usd` is an
+  API-equivalent estimate — on a Pro/Max plan you pay a flat fee, not that
+  number. This statusline detects your billing mode (via the subscriber-only
+  `rate_limits` block) and hides the figure when it would mislead.
+- **No runtime, no Node.** Most feature-rich statuslines ship as Node/npx
+  packages. This is one POSIX `sh` file plus `jq`/`awk` — nothing installed
+  globally, nothing to keep updated, and small enough to audit in two minutes.
+- **It's yours to edit.** Numbered segment blocks and ANSI colors at the top —
+  reorder or delete them in seconds, no config DSL to learn.
+
+Want powerline themes and a config TUI? Use ccstatusline. Want something tiny,
+honest, and hackable? Use this.
 
 ## What it shows
 
