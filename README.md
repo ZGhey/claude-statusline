@@ -23,8 +23,9 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 
 | Segment | Example | Meaning |
 |---------|---------|---------|
-| Used | `used:35%` | 5-hour rate-limit usage — green / yellow / red |
-| Resets | `resets:10:00` | When the 5-hour window resets |
+| 5h | `5h:35%` | 5-hour rate-limit usage — green / yellow (≥50%) / red (>80%) |
+| 7d | `7d:58%` | 7-day (weekly) rate-limit usage, same color thresholds |
+| Resets | `resets:10:00` | When the 5-hour window resets (the near-term one) |
 
 Segments hide themselves when their data isn't available, so the line stays clean.
 

@@ -22,6 +22,27 @@ MAGENTA='\033[35m'
 DIM='\033[2m'
 RESET='\033[0m'
 
+# Render a "label:NN%" rate-limit segment, colored green/yellow/red by usage.
+# Trailing ${DIM} restores the dim state of the enclosing right group after RESET.
+# Prints "label:--" when the value is absent (window not yet reported).
+rate_segment() {
+  _lbl="$1"
+  _val="$2"
+  if [ -n "$_val" ] && [ "$_val" != "null" ]; then
+    _p=$(printf '%.0f' "$_val")
+    if [ "$_p" -gt 80 ]; then
+      _c="$RED"
+    elif [ "$_p" -ge 50 ]; then
+      _c="$YELLOW"
+    else
+      _c="$GREEN"
+    fi
+    printf "${_c}%s:%s%%${RESET}${DIM}" "$_lbl" "$_p"
+  else
+    printf "%s:--" "$_lbl"
+  fi
+}
+
 # 1. Current directory (full path with ~ substitution)
 current_dir=$(printf '%s' "$input" | jq -r '.workspace.current_dir // empty')
 dir_part=""
@@ -113,24 +134,16 @@ if { [ "$lines_added" -gt 0 ] 2>/dev/null; } || { [ "$lines_removed" -gt 0 ] 2>/
   lines_part=$(printf "${GREEN}+%s${RESET}/${RED}-%s${RESET}" "$lines_added" "$lines_removed")
 fi
 
-# 8. Right group: separator + used:XX% + resets:HH:MM — always rendered, dimmed.
-#    used:XX% gets color when data is present; placeholders (--) when not yet available.
-rate_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+# 8. Right group: separator + 5h:XX% + 7d:XX% + resets:HH:MM — always rendered, dimmed.
+#    Each percentage is colored by threshold; placeholders (--) when not yet available.
+#    resets reflects the 5-hour window (the near-term, actionable one); the 7-day
+#    window resets days out, so its time is not shown.
+five_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+seven_used=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 resets_at=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 
-if [ -n "$rate_used" ] && [ "$rate_used" != "null" ]; then
-  rate_pct=$(printf '%.0f' "$rate_used")
-  if [ "$rate_pct" -gt 80 ]; then
-    rate_color="$RED"
-  elif [ "$rate_pct" -ge 50 ]; then
-    rate_color="$YELLOW"
-  else
-    rate_color="$GREEN"
-  fi
-  used_str=$(printf "${rate_color}used:%s%%${RESET}${DIM}" "$rate_pct")
-else
-  used_str="used:--"
-fi
+five_str=$(rate_segment "5h" "$five_used")
+seven_str=$(rate_segment "7d" "$seven_used")
 
 if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
   reset_time=$(date -r "$resets_at" +%H:%M 2>/dev/null)
@@ -144,7 +157,7 @@ else
 fi
 
 # Separator + right group always present, rendered fully dim
-right_group=$(printf "${DIM}│  %s  %s${RESET}" "$used_str" "$resets_str")
+right_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$seven_str" "$resets_str")
 
 # Build left group by joining non-empty parts with two spaces
 left=""
