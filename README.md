@@ -1,5 +1,7 @@
 # claude-statusline
 
+**English** · [简体中文](README.zh-CN.md)
+
 A tiny, dependency-light status line for [Claude Code](https://code.claude.com).
 One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 
@@ -24,8 +26,8 @@ One POSIX `sh` script, no Node, no daemon — just `jq` and `awk`.
 | Segment | Example | Meaning |
 |---------|---------|---------|
 | 5h | `5h:35%` | 5-hour rate-limit usage — green / yellow (≥50%) / red (>80%) |
-| 7d | `7d:58%` | 7-day (weekly) rate-limit usage, same color thresholds |
 | Resets | `resets:10:00` | When the 5-hour window resets (the near-term one) |
+| 7d | `7d:58%` | 7-day (weekly) rate-limit usage, same color thresholds — sits last as the least time-sensitive |
 
 Segments hide themselves when their data isn't available, so the line stays clean.
 

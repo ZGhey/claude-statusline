@@ -134,10 +134,11 @@ if { [ "$lines_added" -gt 0 ] 2>/dev/null; } || { [ "$lines_removed" -gt 0 ] 2>/
   lines_part=$(printf "${GREEN}+%s${RESET}/${RED}-%s${RESET}" "$lines_added" "$lines_removed")
 fi
 
-# 8. Right group: separator + 5h:XX% + 7d:XX% + resets:HH:MM — always rendered, dimmed.
+# 8. Right group: separator + 5h:XX% + resets:HH:MM + 7d:XX% — always rendered, dimmed.
 #    Each percentage is colored by threshold; placeholders (--) when not yet available.
 #    resets reflects the 5-hour window (the near-term, actionable one); the 7-day
-#    window resets days out, so its time is not shown.
+#    window resets days out, so its time is not shown. 7d sits last as the least
+#    time-sensitive figure.
 five_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 seven_used=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 resets_at=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
@@ -157,7 +158,7 @@ else
 fi
 
 # Separator + right group always present, rendered fully dim
-right_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$seven_str" "$resets_str")
+right_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$resets_str" "$seven_str")
 
 # Build left group by joining non-empty parts with two spaces
 left=""
