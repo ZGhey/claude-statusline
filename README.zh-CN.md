@@ -1,6 +1,7 @@
 # claude-statusline
 
 [![shellcheck](https://github.com/ZGhey/claude-statusline/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/ZGhey/claude-statusline/actions/workflows/shellcheck.yml)
+[![release](https://img.shields.io/github/v/release/ZGhey/claude-statusline)](https://github.com/ZGhey/claude-statusline/releases/latest)
 
 [English](README.md) · **简体中文**
 
