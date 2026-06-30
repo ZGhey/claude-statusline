@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="780" height="208" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">
-  <rect width="780" height="208" rx="10" fill="#1e2127"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="208" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">
+  <rect width="880" height="208" rx="10" fill="#1e2127"/>
   <circle cx="22" cy="24" r="6" fill="#e06c75"/>
   <circle cx="42" cy="24" r="6" fill="#e5c07b"/>
   <circle cx="62" cy="24" r="6" fill="#98c379"/>
-  <text x="690" y="29" fill="#5c6370" font-size="12">claude-statusline</text>
+  <text x="720" y="29" fill="#5c6370" font-size="12">claude-statusline</text>
 
   <!-- Subscriber view (default): cost hidden -->
   <text x="22" y="78" fill="#5c6370" font-size="11">SUBSCRIBER (default)</text>
