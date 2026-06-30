@@ -83,16 +83,24 @@ an API-equivalent figure — you pay a flat subscription, not per token — so s
 it is misleading.
 
 The status JSON exposes no billing field, but `rate_limits` is present **only for
-subscribers**. The script uses that as the signal:
+subscribers**. The script uses that as the signal, and it drives two complementary
+segments:
 
-- **Subscriber** (`rate_limits` present) → cost **hidden**
-- **API / console billing** (no `rate_limits`) → cost **shown** (it's your real bill)
+- **Subscriber** (`rate_limits` present) → cost **hidden**, rate-limit group **shown**
+- **API / console billing** (no `rate_limits`) → cost **shown** (it's your real bill), rate-limit group **hidden** (per-token billing has no usage window)
 
 Force the cost segment on regardless with an env var:
 
 ```sh
 export STATUSLINE_SHOW_COST=1
 ```
+
+> **On usage credits?** When a subscriber exhausts their plan quota and opts into
+> pay-as-you-go credits, that spend *is* real — but the status JSON exposes no flag
+> to detect it (so the script can't auto-switch without risking a phantom cost for
+> the far more common "throttled, just waiting for reset" case). If you're on
+> credits and want to watch the spend, set `STATUSLINE_SHOW_COST=1` — cost then
+> shows alongside the rate-limit group and its reset time.
 
 ## Install
 

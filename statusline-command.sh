@@ -2,8 +2,9 @@
 # Claude Code status line
 # Reads JSON from stdin; requires jq.
 # Left group (always-on): dir  model  ctx:XX%  duration  cost
-# Middle group (always-on, dimmed): │  used:XX%  resets:HH:MM  7d:XX%
-#   used:XX% gets green/yellow/red color when data is present; placeholders shown otherwise.
+# Rate-limit group (subscribers only, dimmed): │  5h:XX%  resets:HH:MM  7d:XX%
+#   Hidden for API/console billing, where no usage window applies. Each XX% gets
+#   green/yellow/red color when data is present; placeholders shown otherwise.
 # Tail group (when present): │  branch  +A/-R — pushed to the far right to keep the line tidy.
 
 input=$(cat)
@@ -142,34 +143,39 @@ if { [ "$lines_added" -gt 0 ] 2>/dev/null; } || { [ "$lines_removed" -gt 0 ] 2>/
   lines_part=$(printf "${GREEN}+%s${RESET}/${RED}-%s${RESET}" "$lines_added" "$lines_removed")
 fi
 
-# 8. Right group: separator + 5h:XX% + resets:HH:MM + 7d:XX% — always rendered, dimmed.
-#    Each percentage is colored by threshold; placeholders (--) when not yet available.
-#    resets reflects the 5-hour window (the near-term, actionable one); the 7-day
-#    window resets days out, so its time is not shown. 7d sits last as the least
-#    time-sensitive figure.
-five_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-seven_used=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
-resets_at=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+# 8. Rate-limit group: separator + 5h:XX% + resets:HH:MM + 7d:XX%, dimmed.
+#    Rate limits apply ONLY to Claude.ai subscribers (Pro/Max); API/console
+#    billing is per-token with no usage window, so the whole group — reset time
+#    included — is meaningless there and is hidden (mirrors the cost segment,
+#    which is shown for API billing and hidden for subscribers).
+#    Each percentage is colored by threshold; placeholders (--) when not yet
+#    available. resets reflects the 5-hour window (the near-term, actionable
+#    one); the 7-day window resets days out, so its time is not shown.
+rate_group=""
+if [ "$is_subscriber" = "1" ]; then
+  five_used=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+  seven_used=$(printf '%s' "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+  resets_at=$(printf '%s' "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 
-five_str=$(rate_segment "5h" "$five_used")
-seven_str=$(rate_segment "7d" "$seven_used")
+  five_str=$(rate_segment "5h" "$five_used")
+  seven_str=$(rate_segment "7d" "$seven_used")
 
-if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
-  # `date -r EPOCH` is BSD/macOS; `date -d @EPOCH` is GNU/Linux (also Git Bash
-  # and WSL on Windows). Try BSD first, fall back to GNU, so the time renders
-  # on every platform.
-  reset_time=$(date -r "$resets_at" +%H:%M 2>/dev/null || date -d "@$resets_at" +%H:%M 2>/dev/null)
-  if [ -n "$reset_time" ]; then
-    resets_str="resets:${reset_time}"
+  if [ -n "$resets_at" ] && [ "$resets_at" != "null" ]; then
+    # `date -r EPOCH` is BSD/macOS; `date -d @EPOCH` is GNU/Linux (also Git Bash
+    # and WSL on Windows). Try BSD first, fall back to GNU, so the time renders
+    # on every platform.
+    reset_time=$(date -r "$resets_at" +%H:%M 2>/dev/null || date -d "@$resets_at" +%H:%M 2>/dev/null)
+    if [ -n "$reset_time" ]; then
+      resets_str="resets:${reset_time}"
+    else
+      resets_str="resets:--"
+    fi
   else
     resets_str="resets:--"
   fi
-else
-  resets_str="resets:--"
-fi
 
-# Separator + right group always present, rendered fully dim
-right_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$resets_str" "$seven_str")
+  rate_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$resets_str" "$seven_str")
+fi
 
 # Build left group by joining non-empty parts with two spaces
 left=""
@@ -200,7 +206,16 @@ if [ -n "$tail" ]; then
   tail_group=$(printf "${DIM}│${RESET}  %s" "$tail")
 fi
 
-# Combine groups: left  │ rate-limits  │ branch/lines
-[ -n "$left" ] && printf '%s  ' "$left"
-printf '%s' "$right_group"
-[ -n "$tail_group" ] && printf '  %s' "$tail_group"
+# Combine groups (left  │ rate-limits  │ branch/lines), joining whichever are
+# present with two spaces — the rate-limit group is absent for API/console billing.
+out=""
+for group in "$left" "$rate_group" "$tail_group"; do
+  if [ -n "$group" ]; then
+    if [ -n "$out" ]; then
+      out="$out  $group"
+    else
+      out="$group"
+    fi
+  fi
+done
+printf '%s' "$out"
