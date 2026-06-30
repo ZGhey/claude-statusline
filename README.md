@@ -45,6 +45,9 @@ honest, and hackable? Use this.
 
 ## What it shows
 
+The line reads in three groups, left to right: active session info, then the
+dimmed rate limits, then git info pushed to the far right behind its own `│`.
+
 **Left group (active info):**
 
 | Segment | Example | Meaning |
@@ -54,16 +57,21 @@ honest, and hackable? Use this.
 | Context | `ctx:42%` | Context window used — green / yellow (≥50%) / red (>80%) |
 | Duration | `1m35s` | Session wall-clock time |
 | Cost | `$1.84` | Session cost in USD — **shown only on API/console billing**, hidden for subscribers (see below) |
-| Branch | `⎇ main` | Git branch — from Claude Code, with a `git` fallback when it doesn't report one |
-| Lines | `+156/-23` | Lines added / removed by Claude this session |
 
-**Right group (dimmed, rate limits):**
+**Middle group (dimmed, rate limits):**
 
 | Segment | Example | Meaning |
 |---------|---------|---------|
 | 5h | `5h:35%` | 5-hour rate-limit usage — green / yellow (≥50%) / red (>80%) |
 | Resets | `resets:10:00` | When the 5-hour window resets (the near-term one) |
 | 7d | `7d:58%` | 7-day (weekly) rate-limit usage, same color thresholds — sits last as the least time-sensitive |
+
+**Tail group (git, far right):**
+
+| Segment | Example | Meaning |
+|---------|---------|---------|
+| Branch | `⎇ main` | Git branch — from Claude Code, with a `git` fallback when it doesn't report one |
+| Lines | `+156/-23` | Lines added / removed by Claude this session |
 
 Segments hide themselves when their data isn't available, so the line stays clean.
 

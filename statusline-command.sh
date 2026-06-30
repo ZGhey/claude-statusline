@@ -1,9 +1,10 @@
 #!/bin/sh
 # Claude Code status line
 # Reads JSON from stdin; requires jq.
-# Left group (always-on): dir  model  ctx:XX%  duration  branch
-# Right group (always-on, dimmed): │  used:XX%  resets:HH:MM
+# Left group (always-on): dir  model  ctx:XX%  duration  cost
+# Middle group (always-on, dimmed): │  used:XX%  resets:HH:MM  7d:XX%
 #   used:XX% gets green/yellow/red color when data is present; placeholders shown otherwise.
+# Tail group (when present): │  branch  +A/-R — pushed to the far right to keep the line tidy.
 
 input=$(cat)
 
@@ -172,7 +173,7 @@ right_group=$(printf "${DIM}│  %s  %s  %s${RESET}" "$five_str" "$resets_str" "
 
 # Build left group by joining non-empty parts with two spaces
 left=""
-for part in "$dir_part" "$model_part" "$ctx_part" "$duration_part" "$cost_part" "$branch_part" "$lines_part"; do
+for part in "$dir_part" "$model_part" "$ctx_part" "$duration_part" "$cost_part"; do
   if [ -n "$part" ]; then
     if [ -n "$left" ]; then
       left="$left  $part"
@@ -182,9 +183,24 @@ for part in "$dir_part" "$model_part" "$ctx_part" "$duration_part" "$cost_part" 
   fi
 done
 
-# Combine left and right groups
-if [ -n "$left" ]; then
-  printf '%s  %s' "$left" "$right_group"
-else
-  printf '%s' "$right_group"
+# Tail group: git branch + session lines, pushed to the far right behind their
+# own dim separator so they don't clutter the active info on the left.
+tail=""
+for part in "$branch_part" "$lines_part"; do
+  if [ -n "$part" ]; then
+    if [ -n "$tail" ]; then
+      tail="$tail  $part"
+    else
+      tail="$part"
+    fi
+  fi
+done
+tail_group=""
+if [ -n "$tail" ]; then
+  tail_group=$(printf "${DIM}│${RESET}  %s" "$tail")
 fi
+
+# Combine groups: left  │ rate-limits  │ branch/lines
+[ -n "$left" ] && printf '%s  ' "$left"
+printf '%s' "$right_group"
+[ -n "$tail_group" ] && printf '  %s' "$tail_group"
