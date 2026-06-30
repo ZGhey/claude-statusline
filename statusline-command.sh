@@ -116,11 +116,18 @@ if [ "${STATUSLINE_SHOW_COST:-0}" = "1" ] || [ "$is_subscriber" = "0" ]; then
   fi
 fi
 
-# 6. Git branch (green, only when present)
+# 6. Git branch (green, with a ⎇ glyph). Prefer the JSON field; when it's absent
+#    (Claude Code doesn't always populate it), fall back to asking git directly in
+#    current_dir, so the branch shows reliably.
 git_branch=$(printf '%s' "$input" | jq -r '.workspace.git_branch // empty')
+if [ -z "$git_branch" ] || [ "$git_branch" = "null" ]; then
+  if [ -n "$current_dir" ] && [ "$current_dir" != "null" ]; then
+    git_branch=$(git -C "$current_dir" branch --show-current 2>/dev/null)
+  fi
+fi
 branch_part=""
 if [ -n "$git_branch" ] && [ "$git_branch" != "null" ]; then
-  branch_part=$(printf "${GREEN}%s${RESET}" "$git_branch")
+  branch_part=$(printf "${GREEN}\xe2\x8e\x87 %s${RESET}" "$git_branch")
 fi
 
 # 7. Lines added/removed this session from .cost.total_lines_added/removed
