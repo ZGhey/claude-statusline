@@ -90,10 +90,10 @@ cd claude-statusline
 ./install.sh
 ```
 
-固定到某个 tag 版本(`v0.1.0`),而不是跟随 `main`:
+固定到某个 tag 版本(`v0.2.0`),而不是跟随 `main`:
 
 ```sh
-git clone --branch v0.1.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
+git clone --branch v0.2.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
 cd claude-statusline
 ./install.sh
 ```

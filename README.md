@@ -94,10 +94,10 @@ cd claude-statusline
 ./install.sh
 ```
 
-Pin to a tagged release (`v0.1.0`) instead of tracking `main`:
+Pin to a tagged release (`v0.2.0`) instead of tracking `main`:
 
 ```sh
-git clone --branch v0.1.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
+git clone --branch v0.2.0 --depth 1 https://github.com/ZGhey/claude-statusline.git
 cd claude-statusline
 ./install.sh
 ```
