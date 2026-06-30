@@ -54,7 +54,7 @@ honest, and hackable? Use this.
 | Context | `ctx:42%` | Context window used — green / yellow (≥50%) / red (>80%) |
 | Duration | `1m35s` | Session wall-clock time |
 | Cost | `$1.84` | Session cost in USD — **shown only on API/console billing**, hidden for subscribers (see below) |
-| Branch | `main` | Git branch |
+| Branch | `⎇ main` | Git branch — from Claude Code, with a `git` fallback when it doesn't report one |
 | Lines | `+156/-23` | Lines added / removed by Claude this session |
 
 **Right group (dimmed, rate limits):**
